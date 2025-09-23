@@ -1,0 +1,15 @@
+# R/RStudio
+.Rhistory
+.RData
+.Rproj.user/
+.Ruserdata
+*.Rproj
+
+# Outputs
+/data/*.png
+/data/*.csv
+/data/*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
