@@ -1,6 +1,6 @@
 # ANÁLISE EX-ANTE E EX-POST DA ATA DO COPOM
 
-Este repositório conduz uma análise sistemática de indicadores econômicos em janelas de 12 meses antes e 12 meses após uma ata de referência do Copom.
+Este repositório conduz uma análise sistemática de indicadores econômicos em janelas de 12 meses antes e 12-24 meses após uma ata de referência do Copom.
 
 ## Estrutura
 - `main.R`: orquestra o pipeline lendo a configuração e executando para cada indicador.
