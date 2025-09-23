@@ -69,10 +69,8 @@ build_copom_plot <- function(df_expect, df_real, real_col_name, data_ata, data_i
     ggplot2::annotate("text", x = data_ata_mais24, y = Inf, label = "+24 meses", colour = "darkgrey", angle = 90, vjust = 1.2, size = 3.5) +
     ggplot2::scale_fill_manual(name = NULL, values = c("Intervalo Min-Max" = "lightblue")) +
     ggplot2::scale_colour_manual(name = NULL,
-                        values = c("Máximo" = "grey60",
-                                   "Mínimo" = "grey60",
-                                   "Mediana" = "darkblue",
-                                   !!legend_label_real := "firebrick")) +
+                        values = setNames(c("grey60", "grey60", "darkblue", "firebrick"),
+                                          c("Máximo", "Mínimo", "Mediana", legend_label_real))) +
     ggplot2::guides(fill = ggplot2::guide_legend(order = 1), colour = ggplot2::guide_legend(order = 2)) +
     ggplot2::labs(title = title, subtitle = subtitle, caption = "Fonte: Pesquisa Focus (rbcb) e IBGE", x = "Data", y = y_label) +
     ggplot2::scale_x_date(limits = c(data_ini, data_fim), date_labels = "%b %Y", date_breaks = "3 months",
@@ -91,7 +89,7 @@ build_copom_plot <- function(df_expect, df_real, real_col_name, data_ata, data_i
 export_plot_data <- function(df_expect, df_real, real_col_name, prefix, out_dir = "data") {
   if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
   dados_expectativas <- df_expect %>% dplyr::select(Data, Minimo, Maximo, Mediana) %>% dplyr::arrange(Data)
-  dados_real <- df_real %>% dplyr::select(Data, !!real_col_name := .data[[real_col_name]]) %>% dplyr::arrange(Data)
+  dados_real <- df_real %>% dplyr::transmute(Data, !!rlang::sym(real_col_name) := .data[[real_col_name]]) %>% dplyr::arrange(Data)
   utils::write.table(dados_expectativas, file = file.path(out_dir, paste0(prefix, "_expec.csv")),
                      sep = ";", dec = ",", row.names = FALSE, col.names = TRUE, qmethod = "double")
   utils::write.table(dados_real,        file = file.path(out_dir, paste0(prefix, "_real.csv")),
@@ -129,7 +127,7 @@ run_indicator_pipeline <- function(indicador, data_ata, data_ini, data_fim, out_
                      prefix = tolower(indicador$nome), out_dir = out_dir)
   } else {
     # Exportar somente série real
-    dados_real <- df_real %>% dplyr::select(Data, !!indicador$sgs$real_col := .data[[indicador$sgs$real_col]]) %>% dplyr::arrange(Data)
+    dados_real <- df_real %>% dplyr::transmute(Data, !!rlang::sym(indicador$sgs$real_col) := .data[[indicador$sgs$real_col]]) %>% dplyr::arrange(Data)
     if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
     utils::write.table(dados_real, file = file.path(out_dir, paste0(tolower(indicador$nome), "_real.csv")),
                        sep = ";", dec = ",", row.names = FALSE, col.names = TRUE, qmethod = "double")
