@@ -17,10 +17,10 @@ data_ata_menos12 <- data_ata %m-% months(12)
 data_ata_mais12 <- data_ata %m+% months(12)
 data_ata_mais24 <- data_ata %m+% months(24)
 
-# Resultado primário - Expectativa
+# IGP-M - Expectativa
 df <- get_market_expectations(
   type  = "annual",
-  indic = "Resultado primário",
+  indic = "IGP-M",
   start_date = as.character(data_ini),  # formato "YYYY-MM-DD"
   end_date   = as.character(data_fim),
   keep_names = TRUE,
@@ -28,8 +28,8 @@ df <- get_market_expectations(
 )
 
 if (interactive()) View(df)
-# Filtrando Resultado primário - Expectativa ---------------------
-resultado_primario_expectativa <- df %>%
+# Filtrando IGP-M - Expectativa ---------------------
+igp_m_expectativa <- df %>%
   arrange(DataReferencia) %>%
   filter(
     # regra: DataReferencia é o ano seguinte ao ano de Data
@@ -38,43 +38,46 @@ resultado_primario_expectativa <- df %>%
     DataReferencia %in% c(2004, 2005, 2006)
   )
 
-if (interactive()) View(resultado_primario_expectativa)
+if (interactive()) View(igp_m_expectativa)
 
 # Igualando a data da expectativa para DataReferencia
-resultado_primario_expectativa$Data <- resultado_primario_expectativa$Data + years(1)
+igp_m_expectativa$Data <- igp_m_expectativa$Data + years(1)
 
-if (interactive()) View(resultado_primario_expectativa)
+if (interactive()) View(igp_m_expectativa)
 
-# Obtendo os Dados reais de Resultado primário ---------------------
-resultado_primario_real <- get_series(5289,
+# Obtendo os Dados reais de IGP-M ---------------------
+igp_m_real <- get_series(189,
                          start_date = (data_ini %m-% months(12)),
                          end_date   = data_fim) %>%
-  `colnames<-`(c("Data", "Resultado_Primario")) %>%
-  arrange(Data)
+  `colnames<-`(c("Data", "IGP_M")) %>%
+  arrange(Data) %>%
+  mutate(
+    IGP_M_12m = (zoo::rollapplyr(1 + IGP_M/100, 12, prod, fill = NA) - 1) * 100
+  )
   
-if (interactive()) View(resultado_primario_real)
+if (interactive()) View(igp_m_real)
 
 #--------Grafico----------------------------
 
 # Salvar dados utilizados no gráfico em CSV
-dados_expectativas <- resultado_primario_expectativa %>%
+dados_expectativas <- igp_m_expectativa %>%
   dplyr::select(Data, Minimo, Maximo, Mediana) %>%
   arrange(Data)
 
-dados_resultado <- resultado_primario_real %>%
-  dplyr::select(Data, Resultado_Primario) %>%
+dados_resultado <- igp_m_real %>%
+  dplyr::select(Data, IGP_M_12m) %>%
   arrange(Data)
 
 utils::write.table(dados_expectativas,
-                   file = file.path("data", "resultado_primario_expec.csv"),
+                   file = file.path("data", "igp_m_expec.csv"),
                    sep = ";", dec = ",", row.names = FALSE, col.names = TRUE, qmethod = "double")
 utils::write.table(dados_resultado,
-                   file = file.path("data", "resultado_primario_real.csv"),
+                   file = file.path("data", "igp_m_real.csv"),
                    sep = ";", dec = ",", row.names = FALSE, col.names = TRUE, qmethod = "double")
 
 # Gráfico
 p <- 
-  ggplot(resultado_primario_expectativa, aes(x = Data)) +
+  ggplot(igp_m_expectativa, aes(x = Data)) +
   # Ribbon das expectativas
   geom_ribbon(aes(ymin = Minimo, ymax = Maximo, fill = "Intervalo Min-Max"), alpha = 0.2) +
   
@@ -83,28 +86,28 @@ p <-
   geom_line(aes(y = Minimo, colour = "Mínimo"), size = 0.6) +
   geom_line(aes(y = Mediana, colour = "Mediana"), size = 1.2) +
   
-  # Linha do resultado primário
-  geom_line(data = resultado_primario_real,
-            aes(x = Data, y = Resultado_Primario, colour = "Resultado primário"), size = 1.2) +
+  # Linha do IGP-M 12m
+  geom_line(data = igp_m_real,
+            aes(x = Data, y = IGP_M_12m, colour = "IGP-M 12m"), size = 1.2) +
   
   # Linha vertical da ata
   geom_vline(xintercept = as.numeric(data_ata), linetype = "dashed", colour = "red", size = 1) +
-  annotate("text", x = data_ata, y = max(c(resultado_primario_expectativa$Maximo, resultado_primario_real$Resultado_Primario), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata, y = max(c(igp_m_expectativa$Maximo, igp_m_real$IGP_M_12m), na.rm = TRUE) * 0.95,
            label = "Ata do Copom", colour = "red", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Linha vertical -12 meses
   geom_vline(xintercept = as.numeric(data_ata_menos12), linetype = "dotted", colour = "darkgreen", size = 1) +
-  annotate("text", x = data_ata_menos12, y = max(c(resultado_primario_expectativa$Maximo, resultado_primario_real$Resultado_Primario), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata_menos12, y = max(c(igp_m_expectativa$Maximo, igp_m_real$IGP_M_12m), na.rm = TRUE) * 0.95,
            label = "-12 meses", colour = "darkgreen", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Linha vertical +12 meses
   geom_vline(xintercept = as.numeric(data_ata_mais12), linetype = "dotted", colour = "blue", size = 1) +
-  annotate("text", x = data_ata_mais12, y = max(c(resultado_primario_expectativa$Maximo, resultado_primario_real$Resultado_Primario), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata_mais12, y = max(c(igp_m_expectativa$Maximo, igp_m_real$IGP_M_12m), na.rm = TRUE) * 0.95,
            label = "+12 meses", colour = "blue", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Linha vertical +24 meses
   geom_vline(xintercept = as.numeric(data_ata_mais24), linetype = "dotted", colour = "darkgrey", size = 1) +
-  annotate("text", x = data_ata_mais24, y = max(c(resultado_primario_expectativa$Maximo, resultado_primario_real$Resultado_Primario), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata_mais24, y = max(c(igp_m_expectativa$Maximo, igp_m_real$IGP_M_12m), na.rm = TRUE) * 0.95,
            label = "+24 meses", colour = "darkgrey", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Escalas de cores
@@ -113,16 +116,16 @@ p <-
                       values = c("Máximo" = "grey60",
                                  "Mínimo" = "grey60",
                                  "Mediana" = "darkblue",
-                                 "Resultado primário" = "firebrick")) +
+                                 "IGP-M 12m" = "firebrick")) +
   guides(fill = guide_legend(order = 1), colour = guide_legend(order = 2)) +
   
   # Rótulos
   labs(
-    title = "Ata do Copom: expectativas de resultado primário vs realizado",
-    subtitle = "Expectativas do Focus (12 meses) vs Resultado primário(% PIB)",
+    title = "Ata do Copom: expectativas de IGP-M vs IGP-M 12m",
+    subtitle = "Expectativas do Focus (12 meses) vs IGP-M acumulado em 12 meses",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
-    y = "Resultado primário (% PIB)"
+    y = "IGP-M 12m (%)"
   ) +
   
   # Eixo X (fixa limites para incluir -12 meses e além)
@@ -144,5 +147,5 @@ p <-
   )
 
 # Salvar gráfico na pasta data
-ggsave(filename = file.path("data", "7_resultado_primario.png"), plot = p,
+ggsave(filename = file.path("data", "8_igp_m.png"), plot = p,
        width = 10, height = 6, dpi = 300)
