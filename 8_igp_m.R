@@ -79,12 +79,12 @@ utils::write.table(dados_resultado,
 p <- 
   ggplot(igp_m_expectativa, aes(x = Data)) +
   # Ribbon das expectativas
-  geom_ribbon(aes(ymin = Minimo, ymax = Maximo, fill = "Intervalo Min-Max"), alpha = 0.2) +
+  geom_ribbon(aes(ymin = Minimo, ymax = Maximo, fill = "Intervalo Min-Max (Expectativa)"), alpha = 0.2) +
   
   # Linhas das expectativas
-  geom_line(aes(y = Maximo, colour = "Máximo"), size = 0.6) +
-  geom_line(aes(y = Minimo, colour = "Mínimo"), size = 0.6) +
-  geom_line(aes(y = Mediana, colour = "Mediana"), size = 1.2) +
+  geom_line(aes(y = Maximo, colour = "Máximo (Expectativa)"), size = 0.6, show.legend = FALSE) +
+  geom_line(aes(y = Minimo, colour = "Mínimo (Expectativa)"), size = 0.6, show.legend = FALSE) +
+  geom_line(aes(y = Mediana, colour = "Mediana (Expectativa)"), size = 1.2) +
   
   # Linha do IGP-M 12m
   geom_line(data = igp_m_real,
@@ -111,12 +111,11 @@ p <-
            label = "+24 meses", colour = "darkgrey", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Escalas de cores
-  scale_fill_manual(name = NULL, values = c("Intervalo Min-Max" = "lightblue")) +
+  scale_fill_manual(name = NULL, values = c("Intervalo Min-Max (Expectativa)" = "lightblue")) +
   scale_colour_manual(name = NULL,
-                      values = c("Máximo" = "grey60",
-                                 "Mínimo" = "grey60",
-                                 "Mediana" = "darkblue",
-                                 "IGP-M 12m" = "firebrick")) +
+                      breaks = c("IGP-M 12m", "Mediana (Expectativa)"),
+                      values = c("IGP-M 12m" = "firebrick",
+                                 "Mediana (Expectativa)" = "darkblue")) +
   guides(fill = guide_legend(order = 1), colour = guide_legend(order = 2)) +
   
   # Rótulos
