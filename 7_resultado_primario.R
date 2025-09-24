@@ -46,7 +46,7 @@ resultado_primario_expectativa$Data <- resultado_primario_expectativa$Data + yea
 if (interactive()) View(resultado_primario_expectativa)
 
 # Obtendo os Dados reais de Resultado primário ---------------------
-resultado_primario_real <- get_series(5289,
+resultado_primario_real <- get_series(5650,
                          start_date = (data_ini %m-% months(12)),
                          end_date   = data_fim) %>%
   `colnames<-`(c("Data", "Resultado_Primario")) %>%
