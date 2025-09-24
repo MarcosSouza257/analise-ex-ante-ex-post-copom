@@ -44,11 +44,21 @@ pib_expectativa$Data <- pib_expectativa$Data + years(1)
 if (interactive()) View(pib_expectativa)
 
 # Obtendo os Dados reais de PIB ---------------------
-pib_real <- get_series(7326,
-                        start_date = (data_ini %m-% months(12)),
-                        end_date   = data_fim) %>%
-  `colnames<-`(c("Data", "PIB")) %>%
-  arrange(Data)
+pib_real <- read.csv(file.path("data", "pib_taxa_trim.csv"),
+                    sep = ";", dec = ",", stringsAsFactors = FALSE) %>%
+  {
+    # Normalizar nomes esperados: Data e PIB
+    nm <- names(.)
+    if (length(nm) >= 1 && nm[1] != "Data") nm[1] <- "Data"
+    if (length(nm) >= 2 && !("PIB" %in% nm)) nm[2] <- "PIB"
+    names(.) <- nm
+    .
+  } %>%
+  mutate(Data = as.Date(Data)) %>%
+  arrange(Data) %>%
+  mutate(
+    PIB_12m = (zoo::rollapplyr(1 + PIB/100, 4, prod, fill = NA) - 1) * 100
+  )
 
 if (interactive()) View(pib_real)
 
@@ -81,28 +91,28 @@ p <-
   geom_line(aes(y = Minimo, colour = "Mínimo"), size = 0.6) +
   geom_line(aes(y = Mediana, colour = "Mediana"), size = 1.2) +
   
-  # Linha do PIB
+  # Linha do PIB acumulado em 4 trimestres (12m)
   geom_line(data = pib_real,
-            aes(x = Data, y = PIB, colour = "PIB Trimestral"), size = 1.2) +
+            aes(x = Data, y = PIB_12m, colour = "PIB 12m"), size = 1.2) +
   
   # Linha vertical da ata
   geom_vline(xintercept = as.numeric(data_ata), linetype = "dashed", colour = "red", size = 1) +
-  annotate("text", x = data_ata, y = max(c(pib_expectativa$Maximo, pib_real$PIB), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata, y = max(c(pib_expectativa$Maximo, pib_real$PIB_12m), na.rm = TRUE) * 0.95,
            label = "Ata do Copom", colour = "red", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Linha vertical -12 meses
   geom_vline(xintercept = as.numeric(data_ata_menos12), linetype = "dotted", colour = "darkgreen", size = 1) +
-  annotate("text", x = data_ata_menos12, y = max(c(pib_expectativa$Maximo, pib_real$PIB), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata_menos12, y = max(c(pib_expectativa$Maximo, pib_real$PIB_12m), na.rm = TRUE) * 0.95,
            label = "-12 meses", colour = "darkgreen", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Linha vertical +12 meses
   geom_vline(xintercept = as.numeric(data_ata_mais12), linetype = "dotted", colour = "blue", size = 1) +
-  annotate("text", x = data_ata_mais12, y = max(c(pib_expectativa$Maximo, pib_real$PIB), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata_mais12, y = max(c(pib_expectativa$Maximo, pib_real$PIB_12m), na.rm = TRUE) * 0.95,
            label = "+12 meses", colour = "blue", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Linha vertical +24 meses
   geom_vline(xintercept = as.numeric(data_ata_mais24), linetype = "dotted", colour = "darkgrey", size = 1) +
-  annotate("text", x = data_ata_mais24, y = max(c(pib_expectativa$Maximo, pib_real$PIB), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata_mais24, y = max(c(pib_expectativa$Maximo, pib_real$PIB_12m), na.rm = TRUE) * 0.95,
            label = "+24 meses", colour = "darkgrey", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Escalas de cores
@@ -111,16 +121,16 @@ p <-
                       values = c("Máximo" = "grey60",
                                  "Mínimo" = "grey60",
                                  "Mediana" = "darkblue",
-                                 "PIB " = "firebrick")) +
+                                 "PIB 12m" = "firebrick")) +
   guides(fill = guide_legend(order = 1), colour = guide_legend(order = 2)) +
   
   # Rótulos
   labs(
-    title = "Ata do Copom: expectativas de PIB vs PIB trimestral",
-    subtitle = "Expectativas do Focus (ano seguinte) vs PIB acumulado em 4 trimestres",
+    title = "Ata do Copom: expectativas de PIB vs PIB acumulado (4 trimestres)",
+    subtitle = "Expectativas do Focus (ano seguinte) vs PIB 12m",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
-    y = "PIB (%)"
+    y = "PIB 12m (%)"
   ) +
   
   # Eixo X (fixa limites para incluir -12 meses e além)
