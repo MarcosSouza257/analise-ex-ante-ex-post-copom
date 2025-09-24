@@ -3,7 +3,7 @@
 # Data: 2025-09-10
 
 # Verificar/instalar e carregar pacotes necessários
-pkgs <- c("dplyr", "ggplot2", "rbcb", "knitr", "zoo", "lubridate")
+pkgs <- c("dplyr", "ggplot2", "rbcb", "knitr", "zoo", "lubridate", "ggnewscale")
 to_install <- pkgs[!pkgs %in% installed.packages()[, 1]]
 if (length(to_install)) install.packages(to_install)
 invisible(lapply(pkgs, require, character.only = TRUE))
@@ -20,7 +20,7 @@ data_ata_mais24 <- data_ata %m+% months(24)
 # Investimento direto - Expectativa
 df <- get_market_expectations(
   type  = "annual",
-  indic = "Investimento direto no país",
+  indic = "Dívida líquida do setor público",
   start_date = as.character(data_ini),  # formato "YYYY-MM-DD"
   end_date   = as.character(data_fim),
   keep_names = TRUE,
@@ -29,7 +29,7 @@ df <- get_market_expectations(
 
 if (interactive()) View(df)
 # Filtrando Investimento direto - Expectativa ---------------------
-investimento_direto_expectativa <- df %>%
+divida_liquida_expectativa <- df %>%
   arrange(DataReferencia) %>%
   filter(
     # regra: DataReferencia é o ano seguinte ao ano de Data
@@ -39,95 +39,94 @@ investimento_direto_expectativa <- df %>%
     
   )
 
-if (interactive()) View(investimento_direto_expectativa)
+if (interactive()) View(divida_liquida_expectativa)
 
 # Igualando a data da expectativa para DataReferencia
-investimento_direto_expectativa$Data <- investimento_direto_expectativa$Data + years(1)
+divida_liquida_expectativa$Data <- divida_liquida_expectativa$Data + years(1)
 
-if (interactive()) View(investimento_direto_expectativa)
+if (interactive()) View(divida_liquida_expectativa)
 
 # Obtendo os Dados reais de Investimento direto ---------------------
-investimento_direto_real <- get_series(22864,
+divida_liquida_real <- get_series(4513,
                          start_date = (data_ini %m-% months(12)),
                          end_date   = data_fim) %>%
-  `colnames<-`(c("Data", "Investimento_Direto")) %>%
-  arrange(Data) %>%
-  mutate(
-    Investimento_Direto = Investimento_Direto / 1000,                      # milhões -> bilhões
-    Investimento_Direto_12m = zoo::rollapplyr(Investimento_Direto, 12, sum, fill = NA)  # soma 12m em bilhões
-  )
+  `colnames<-`(c("Data", "Divida_Liquida")) %>%
+  arrange(Data)
   
-if (interactive()) View(investimento_direto_real)
+if (interactive()) View(divida_liquida_real)
 
 #--------Grafico----------------------------
 
 # Salvar dados utilizados no gráfico em CSV
-dados_expectativas <- investimento_direto_expectativa %>%
+dados_expectativas <- divida_liquida_expectativa %>%
   dplyr::select(Data, Minimo, Maximo, Mediana) %>%
   arrange(Data)
 
-dados_resultado <- investimento_direto_real %>%
-  dplyr::select(Data, Investimento_Direto_12m) %>%
+dados_resultado <- divida_liquida_real %>%
+  dplyr::select(Data, Divida_Liquida) %>%
   arrange(Data)
 
 utils::write.table(dados_expectativas,
-                   file = file.path("data", "investimento_direto_expec.csv"),
+                   file = file.path("data", "divida_liquida_expec.csv"),
                    sep = ";", dec = ",", row.names = FALSE, col.names = TRUE, qmethod = "double")
 utils::write.table(dados_resultado,
-                   file = file.path("data", "investimento_direto_real.csv"),
+                   file = file.path("data", "divida_liquida_real.csv"),
                    sep = ";", dec = ",", row.names = FALSE, col.names = TRUE, qmethod = "double")
 
 # Gráfico
 p <- 
-  ggplot(investimento_direto_expectativa, aes(x = Data)) +
+  ggplot(divida_liquida_expectativa, aes(x = Data)) +
   # Ribbon das expectativas
-  geom_ribbon(aes(ymin = Minimo, ymax = Maximo, fill = "Intervalo Min-Max"), alpha = 0.2) +
+  geom_ribbon(aes(ymin = Minimo, ymax = Maximo, fill = "Intervalo Min-Max (Expectativa)"), alpha = 0.2) +
   
   # Linhas das expectativas
-  geom_line(aes(y = Maximo, colour = "Máximo"), size = 0.6) +
-  geom_line(aes(y = Minimo, colour = "Mínimo"), size = 0.6) +
-  geom_line(aes(y = Mediana, colour = "Mediana"), size = 1.2) +
+  geom_line(aes(y = Maximo, colour = "Máximo (Expectativa)"), size = 0.6, show.legend = FALSE) +
+  geom_line(aes(y = Minimo, colour = "Mínimo (Expectativa)"), size = 0.6, show.legend = FALSE) +
+  geom_line(aes(y = Mediana, colour = "Mediana (Expectativa)"), size = 1.2) +
   
-  # Linha do Investimento direto 12m (US$ bi)
-  geom_line(data = investimento_direto_real,
-            aes(x = Data, y = Investimento_Direto_12m, colour = "Investimento direto 12m"), size = 1.2) +
+  # Linha da Dívida líquida
+  geom_line(data = divida_liquida_real,
+            aes(x = Data, y = Divida_Liquida, colour = "Dívida líquida"), size = 1.2) +
   
   # Linha vertical da ata
   geom_vline(xintercept = as.numeric(data_ata), linetype = "dashed", colour = "red", size = 1) +
-  annotate("text", x = data_ata, y = max(c(investimento_direto_expectativa$Maximo, investimento_direto_real$Investimento_Direto_12m), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata, y = max(c(divida_liquida_expectativa$Maximo, divida_liquida_real$Divida_Liquida), na.rm = TRUE) * 0.95,
            label = "Ata do Copom", colour = "red", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Linha vertical -12 meses
   geom_vline(xintercept = as.numeric(data_ata_menos12), linetype = "dotted", colour = "darkgreen", size = 1) +
-  annotate("text", x = data_ata_menos12, y = max(c(investimento_direto_expectativa$Maximo, investimento_direto_real$Investimento_Direto_12m), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata_menos12, y = max(c(divida_liquida_expectativa$Maximo, divida_liquida_real$Divida_Liquida), na.rm = TRUE) * 0.95,
            label = "-12 meses", colour = "darkgreen", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Linha vertical +12 meses
   geom_vline(xintercept = as.numeric(data_ata_mais12), linetype = "dotted", colour = "blue", size = 1) +
-  annotate("text", x = data_ata_mais12, y = max(c(investimento_direto_expectativa$Maximo, investimento_direto_real$Investimento_Direto_12m), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata_mais12, y = max(c(divida_liquida_expectativa$Maximo, divida_liquida_real$Divida_Liquida), na.rm = TRUE) * 0.95,
            label = "+12 meses", colour = "blue", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Linha vertical +24 meses
   geom_vline(xintercept = as.numeric(data_ata_mais24), linetype = "dotted", colour = "darkgrey", size = 1) +
-  annotate("text", x = data_ata_mais24, y = max(c(investimento_direto_expectativa$Maximo, investimento_direto_real$Investimento_Direto_12m), na.rm = TRUE) * 0.95,
+  annotate("text", x = data_ata_mais24, y = max(c(divida_liquida_expectativa$Maximo, divida_liquida_real$Divida_Liquida), na.rm = TRUE) * 0.95,
            label = "+24 meses", colour = "darkgrey", angle = 90, vjust = -0.2, size = 3.5) +
   
   # Escalas de cores
-  scale_fill_manual(name = NULL, values = c("Intervalo Min-Max" = "lightblue")) +
-  scale_colour_manual(name = NULL,
-                      values = c("Máximo" = "grey60",
-                                 "Mínimo" = "grey60",
-                                 "Mediana" = "darkblue",
-                                 "Investimento direto 12m" = "firebrick")) +
+  scale_fill_manual(name = NULL, values = c("Intervalo Min-Max (Expectativa)" = "lightblue")) +
+  scale_colour_manual(
+    name = NULL,
+    breaks = c("Dívida líquida", "Mediana (Expectativa)"),
+    values = c(
+      "Dívida líquida" = "firebrick",
+      "Mediana (Expectativa)" = "darkblue"
+    )
+  ) +
   guides(fill = guide_legend(order = 1), colour = guide_legend(order = 2)) +
   
   # Rótulos
   labs(
-    title = "Ata do Copom: expectativas de investimento direto vs realizado",
-    subtitle = "Expectativas do Focus (12 meses) vs investimento direto acumulado em 12 meses (US$ bi)",
+    title = "Ata do Copom: expectativas de Dívida líquida do setor público vs realizada",
+    subtitle = "Expectativas do Focus (12 meses) vs Dívida líquida (% do PIB) ",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
-    y = "Investimento direto 12m (US$ bi)"
+    y = "Dívida líquida (% do PIB)"
   ) +
   
   # Eixo X (fixa limites para incluir -12 meses e além)
@@ -149,5 +148,5 @@ p <-
   )
 
 # Salvar gráfico na pasta data
-ggsave(filename = file.path("data", "10_investimento_direto.png"), plot = p,
+ggsave(filename = file.path("data", "11_divida_liquida.png"), plot = p,
        width = 10, height = 6, dpi = 300)
