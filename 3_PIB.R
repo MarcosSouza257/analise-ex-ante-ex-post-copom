@@ -81,9 +81,9 @@ p <-
   geom_line(aes(y = Minimo, colour = "Mínimo"), size = 0.6) +
   geom_line(aes(y = Mediana, colour = "Mediana"), size = 1.2) +
   
-  # Linha do PIB trimestral (%)
+  # Linha do PIB Anual (%)
   geom_line(data = pib_real,
-            aes(x = Data, y = PIB, colour = "PIB Trimestral"), size = 1.2) +
+            aes(x = Data, y = PIB, colour = "PIB Anual"), size = 1.2) +
   
   # Linha vertical da ata
   geom_vline(xintercept = as.numeric(data_ata), linetype = "dashed", colour = "red", size = 1) +
@@ -111,13 +111,13 @@ p <-
                       values = c("Máximo" = "grey60",
                                  "Mínimo" = "grey60",
                                  "Mediana" = "darkblue",
-                                 "PIB Trimestral" = "firebrick")) +
+                                 "PIB Anual" = "firebrick")) +
   guides(fill = guide_legend(order = 1), colour = guide_legend(order = 2)) +
   
   # Rótulos
   labs(
-    title = "Ata do Copom: expectativas de PIB vs PIB trimestral",
-    subtitle = "Expectativas do Focus (ano seguinte) vs PIB trimestral",
+    title = "Ata do Copom: expectativas de PIB vs PIB Anual",
+    subtitle = "Expectativas do Focus (ano seguinte) vs PIB Anual",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "PIB (%)"
