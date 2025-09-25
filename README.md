@@ -25,12 +25,26 @@ Os gráficos e tabelas serão salvos em `data/`. Os scripts criam a pasta se nec
 - ggnewscale (usado em `11_divida_liquida.R`)
 - tidyr (usado pontualmente via `tidyr::fill` em `1_Meta_inflacao.R`)
 
+## Referências das séries (SGS e fontes)
+- 13521 — Meta para a inflação (% a.a.)
+- 433 — Índice Nacional de Preços ao Consumidor Amplo (IPCA) — var. % mensal
+- 7326 — Produto Interno Bruto — taxa de variação real no ano — var. % anual
+- taxa_desemprego.csv — IBGE/PME via ipeadatapy (série PAN12_TD12)
+- 1178 — Taxa de juros — Selic anualizada (base 252) — % a.a.
+- 1 — Taxa de câmbio — Livre — Dólar americano (venda) — diário — u.m.c./US$
+- 5727 — NFSP sem desvalorização cambial (% PIB) — fluxo acumulado em 12 meses — Resultado nominal — Total — Setor público consolidado — %
+- 5793 — NFSP sem desvalorização cambial (% PIB) — fluxo acumulado em 12 meses — Resultado primário — Total — Setor público consolidado — %
+- 189 — Índice Geral de Preços do Mercado (IGP-M) — var. % mensal
+- 22707 — Balança comercial — Balanço de Pagamentos — mensal — saldo — US$ (milhões)
+- 22885 — Investimentos diretos no país — IDP — mensal — líquido — US$ (milhões)
+- 4513 — Dívida Líquida do Setor Público (% PIB) — Total — Setor público consolidado — %
+
 ## Séries e transformações por indicador
 A menos que indicado, para expectativas (Focus) é usado `type = "annual"`, `keep_names = TRUE` e o filtro `$filter = "baseCalculo eq 0"`. Em todos os casos, as expectativas são filtradas para `DataReferencia == year(Data) + 1` e `DataReferencia ∈ {2004, 2005, 2006}`, e a coluna `Data` é deslocada em +1 ano para alinhar à referência projetada.
 
 ### 1) Meta de inflação vs IPCA (arquivo `1_Meta_inflacao.R`)
 - Séries SGS:
-  - 13521 — Meta de inflação (Meta_IPCA)
+  - 13521 — Meta para a inflação (% a.a.) 
   - 433 — IPCA mensal (IPCA)
 - Transformações:
   - IPCA_12m = (produtorio de 12 meses de (1 + IPCA/100) − 1) × 100
@@ -50,7 +64,7 @@ A menos que indicado, para expectativas (Focus) é usado `type = "annual"`, `kee
 - Saídas: `data/pib_expec.csv`, `data/pib_real.csv`, `data/3_pib_com_expectativa.png`
 
 ### 4) Taxa de desemprego (arquivo `4_taxa_desemprego.R`)
-- Fonte: `data/taxa_desemprego.csv` (colunas normalizadas para `Data` e `Taxa_Desemprego`)
+- Fonte: `data/taxa_desemprego.csv` — IBGE/PME via ipeadatapy (série PAN12_TD12). Colunas normalizadas para `Data` e `Taxa_Desemprego`.
 - Transformações: conversão de data, ordenação e filtro para [ata−12m, ata+12m]
 - Saídas: `data/4_taxa_desemprego.png`
 
