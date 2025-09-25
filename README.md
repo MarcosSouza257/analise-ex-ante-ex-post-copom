@@ -40,7 +40,11 @@ Os gráficos e tabelas serão salvos em `data/`. Os scripts criam a pasta se nec
 - 4513 — Dívida Líquida do Setor Público (% PIB) — Total — Setor público consolidado — %
 
 ## Séries e transformações por indicador
-A menos que indicado, para expectativas (Focus) é usado `type = "annual"`, `keep_names = TRUE` e o filtro `$filter = "baseCalculo eq 0"`. Em todos os casos, as expectativas são filtradas para `DataReferencia == year(Data) + 1` e `DataReferencia ∈ {2004, 2005, 2006}`, e a coluna `Data` é deslocada em +1 ano para alinhar à referência projetada.
+A menos que indicado, para expectativas (Focus) é usado `type = "annual"`, `keep_names = TRUE` e o filtro `$filter = "baseCalculo eq 0"`.
+
+O filtro baseCalculo igual a 1 refere-se ao prazo de validade das expectativas informadas. Esta coluna pode ser 0 ou 1. baseCalculo igual a 0 considera as expectativas informadas nos últimos 30 dias no cálculo das estatísticas e baseCalculo igual a 1 considera os últimos 4 dias. Foi escolhida baseCalculo igual a 0 por ter uma amostra maior.
+
+Em todos os casos, as expectativas são filtradas para `DataReferencia == year(Data) + 1` e `DataReferencia ∈ {2004, 2005, 2006}`, e a coluna `Data` é deslocada em +1 ano para alinhar à referência projetada.
 
 ### 1) Meta de inflação vs IPCA (arquivo `1_Meta_inflacao.R`)
 - Séries SGS:
