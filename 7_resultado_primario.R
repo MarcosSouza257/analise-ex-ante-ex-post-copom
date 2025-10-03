@@ -48,6 +48,9 @@ if (interactive()) View(resultado_primario_expectativa)
 # Obtendo os Dados reais de Resultado primário ---------------------
 # Série 5793: NFSP sem desvalorização cambial (% PIB) - Fluxo acumulado em 12 meses
 # Resultado primário - Total - Setor público consolidado
+
+# 5507 - NFSP sem desvalorização cambial (% PIB) - Fluxo acumulado no ano
+# Resultado primário - Total - Setor público consolidado
 resultado_primario_real <- get_series(5793,
                          start_date = (data_ini %m-% months(12)),
                          end_date   = data_fim) %>%

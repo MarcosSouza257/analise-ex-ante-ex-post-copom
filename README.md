@@ -1,6 +1,6 @@
 # ANÁLISE EX-ANTE E EX-POST DA ATA DO COPOM
 
-Este repositório conduz uma análise sistemática de indicadores econômicos em janelas de 12 meses antes e 12–24 meses após uma ata de referência do Copom (neste projeto, 27/01/2005).
+Este repositório conduz uma análise sistemática de indicadores econômicos em janelas de 12 meses antes e 12–24 meses após uma ata de referência do Copom. A data de referência é definida em cada script pela variável `data_ata` (nos arquivos atuais, exemplo: `data_ata <- as.Date("2011-01-01")`).
 
 ## Estrutura
 - Scripts R numerados (`1_*.R` a `11_*.R`): cada script é autônomo, baixa dados (Focus/SGS ou CSV local), aplica transformações e salva saídas em `data/` (CSVs e PNGs).
@@ -20,10 +20,15 @@ Rscript 11_divida_liquida.R
 
 Os gráficos e tabelas serão salvos em `data/`. Os scripts criam a pasta se necessário.
 
+No Windows/PowerShell, se `Rscript` não estiver no PATH, use o caminho completo e o operador `&`:
+
+```powershell
+& "C:\Program Files\R\R-4.5.1\bin\x64\Rscript.exe" 2_IPCA.R
+```
+
 ## Dependências (R)
-- dplyr, ggplot2, rbcb, knitr, zoo, lubridate
-- ggnewscale (usado em `11_divida_liquida.R`)
-- tidyr (usado pontualmente via `tidyr::fill` em `1_Meta_inflacao.R`)
+- dplyr, ggplot2, rbcb, knitr, zoo, lubridate, tidyr
+- ggnewscale (carregado em `11_divida_liquida.R`)
 
 ## Referências das séries (SGS e fontes)
 - 13521 — Meta para a inflação (% a.a.)
@@ -64,7 +69,7 @@ Em todos os casos, as expectativas são filtradas para `DataReferencia == year(D
 ### 3) PIB (arquivo `3_PIB.R`)
 - Expectativas Focus: `indic = "PIB Total"`
 - Série SGS real: 7326 — PIB anual (%)
-- Transformações: apenas ordenação por data (sem cálculo adicional)
+- Transformações: ordenação por data (sem cálculo adicional)
 - Saídas: `data/pib_expec.csv`, `data/pib_real.csv`, `data/3_pib_com_expectativa.png`
 
 ### 4) Taxa de desemprego (arquivo `4_taxa_desemprego.R`)
@@ -124,6 +129,28 @@ Em todos os casos, as expectativas são filtradas para `DataReferencia == year(D
 - Transformações: ordenação por data (sem cálculo adicional)
 - Saídas: `data/divida_liquida_expec.csv`, `data/divida_liquida_real.csv`, `data/11_divida_liquida.png`
 
-## Janela temporal comum
-Todos os scripts usam como referência `data_ata = 2005-01-27`, definindo `data_ini = ata − 24 meses` e `data_fim = ata + 24 meses`. Os gráficos incluem linhas verticais em ata, ata−12m e ata+12/24m.
+## Padronização de janelas, títulos e legendas
+- Janelas:
+  - Indicadores com expectativas (Focus): gráficos com janela de −12m a +24m em relação à ata.
+  - Sem expectativas (ex.: desemprego): janela de −12m a +12m.
+- Títulos/subtítulos: padronizados para explicitar "Ata do Copom", a janela e se a medida é 12m ou fluxo 12m quando aplicável.
+- Legendas (expectativas): exibem "Intervalo Min-Max (Expectativa)" (faixa) e "Mediana (Expectativa)" (linha). As linhas de "Máximo" e "Mínimo" são traçadas mas ocultadas na legenda. A série realizada aparece com cor distinta.
+
+Linhas verticais destacam: data da ata, ata−12m e ata+12/24m.
+
+Os CSVs usam separador `;` e decimal `,`.
+
+## Solução de problemas (FAQ)
+- "Error: object 'p' not found": ocorre quando o gráfico falha antes de criar `p` e `ggsave(plot = p)` roda depois. Verifique erros anteriores (por exemplo, limites do eixo X) e garanta que `p <- ggplot(...) + ...` foi executado. Opcionalmente, proteja o save:
+  ```r
+  if (exists("p") && inherits(p, "ggplot")) {
+    ggsave(file.path("data","1_Meta_inflacao.png"), plot = p, width = 10, height = 6, dpi = 300)
+  }
+  ```
+- `scale_x_date(..., limits = c(...))`: passe objetos `Date`, não `character`. Ex.:
+  ```r
+  scale_x_date(limits = c(data_ata_menos12, data_fim), ...)
+  ```
+- `Rscript` não reconhecido no PowerShell: use o caminho completo e o operador `&` (ver seção Como executar).
+- Falhas da API do BCB (`rbcb`) com mensagem XML/JSON: geralmente indicam indisponibilidade temporária da API ou rede. Tente novamente mais tarde.
 
