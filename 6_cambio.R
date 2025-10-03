@@ -115,8 +115,8 @@ p <-
   
   # Rótulos
   labs(
-    title = "Ata do Copom: expectativas de câmbio vs câmbio realizado",
-    subtitle = "Expectativas do Focus (12 meses) vs Câmbio (R$/US$)",
+    title = "Ata do Copom: expectativas de câmbio vs câmbio observado",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus (12m) vs R$/US$",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "R$/US$"

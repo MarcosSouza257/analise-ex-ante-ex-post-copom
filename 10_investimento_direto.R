@@ -122,8 +122,8 @@ p <-
   
   # Rótulos
   labs(
-    title = "Ata do Copom: expectativas de investimento direto vs realizado",
-    subtitle = "Expectativas do Focus (12 meses) vs investimento direto acumulado em 12 meses (US$ bi)",
+    title = "Ata do Copom: expectativas de investimento direto vs investimento direto (12m)",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus (12m) vs IDP acumulado em 12 meses (US$ bi)",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "Investimento direto 12m (US$ bi)"

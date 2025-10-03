@@ -86,8 +86,8 @@ p <-
   
   # Rótulos
   labs(
-    title = "Meta de Inflação vs IPCA",
-    #subtitle = "IPCA acumulado em 12 meses vs Meta de Inflação",
+    title = "Meta de inflação vs IPCA (12m)",
+    subtitle = "Janela: −12m a +24m da ata; IPCA 12m vs Meta",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "Inflação (%)"

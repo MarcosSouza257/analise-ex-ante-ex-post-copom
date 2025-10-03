@@ -116,7 +116,7 @@ p <-
   # Rótulos
   labs(
     title = "Ata do Copom: expectativas de Selic vs Selic realizada",
-    subtitle = "Expectativas do Focus (12 meses) vs Selic (% a.a.)",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus (12m) vs Selic (% a.a.)",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "Selic (% a.a.)"

@@ -69,7 +69,8 @@ p <-
   
   # Rótulos
   labs(
-    title = "Taxa de desemprego",
+    title = "Ata do Copom: taxa de desemprego vs expectativas",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus vs desemprego observado",
     x = "Data",
     y = "Desemprego (%)"
   ) +

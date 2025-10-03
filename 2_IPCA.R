@@ -128,8 +128,8 @@ p <-
   
   # Rótulos
   labs(
-    title = "Impacto da ata do Copom nas expectativas de inflação",
-    subtitle = "Expectativas do Focus em janela móvel de 12 meses comparadas ao IPCA realizado acumulado",
+    title = "Ata do Copom: expectativas de inflação vs IPCA (12m)",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus vs IPCA acumulado em 12 meses",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "Inflação (%)"

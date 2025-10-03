@@ -120,8 +120,8 @@ p <-
   
   # Rótulos
   labs(
-    title = "Ata do Copom: expectativas de IGP-M vs IGP-M 12m",
-    subtitle = "Expectativas do Focus (12 meses) vs IGP-M acumulado em 12 meses",
+    title = "Ata do Copom: expectativas de IGP-M vs IGP-M (12m)",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus (12m) vs IGP-M acumulado em 12 meses",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "IGP-M 12m (%)"

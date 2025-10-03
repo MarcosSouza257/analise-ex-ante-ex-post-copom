@@ -123,8 +123,8 @@ p <-
   
   # Rótulos
   labs(
-    title = "Ata do Copom: expectativas de balança comercial vs 12m",
-    subtitle = "Expectativas do Focus (12 meses) vs Balança comercial acumulada em 12 meses (US$ bi)",
+    title = "Ata do Copom: expectativas de balança comercial vs balança comercial (12m)",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus (12m) vs saldo acumulado em 12 meses (US$ bi)",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "Balança comercial 12m (US$ bi)"

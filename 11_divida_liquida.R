@@ -123,7 +123,7 @@ p <-
   # Rótulos
   labs(
     title = "Ata do Copom: expectativas de Dívida líquida do setor público vs realizada",
-    subtitle = "Expectativas do Focus (12 meses) vs Dívida líquida (% do PIB) ",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus (12m) vs Dívida líquida (% do PIB)",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "Dívida líquida (% do PIB)"

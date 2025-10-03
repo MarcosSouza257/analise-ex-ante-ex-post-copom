@@ -125,10 +125,10 @@ p <-
   # Rótulos
   labs(
     title = "Ata do Copom: expectativas de resultado nominal vs realizado",
-    subtitle = "Expectativas do Focus (12 meses) vs Resultado nominal (% PIB)",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus (12m) vs Resultado nominal (% do PIB)",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
-    y = "Resultado nominal (% PIB)"
+    y = "Resultado nominal (% do PIB)"
   ) +
   
   # Eixo X (fixa limites para incluir -12 meses e além)

@@ -115,11 +115,11 @@ p <-
   
   # Rótulos
   labs(
-    title = "Ata do Copom: expectativas de PIB vs PIB Anual",
-    subtitle = "Expectativas do Focus (ano seguinte) vs PIB Anual",
+    title = "Ata do Copom: expectativas de PIB vs PIB anual (12m)",
+    subtitle = "Janela: −12m a +24m da ata; Mediana do Focus vs PIB acumulado em 4 trimestres",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
-    y = "PIB (%)"
+    y = "PIB anual (12m) (%)"
   ) +
   
   # Eixo X (fixa limites para incluir -12 meses e além)
