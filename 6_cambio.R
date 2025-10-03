@@ -10,7 +10,7 @@ invisible(lapply(pkgs, require, character.only = TRUE))
 
 # 104ª Reunião - janeiro 2005
 # Datas de referência
-data_ata  <- as.Date("2005-01-27")
+data_ata  <- as.Date("2011-01-01")
 data_ini  <- data_ata %m-% months(24)
 data_fim  <- data_ata %m+% months(24)
 data_ata_menos12 <- data_ata %m-% months(12)
@@ -35,7 +35,7 @@ cambio_expectativa <- df %>%
     # regra: DataReferencia é o ano seguinte ao ano de Data
     DataReferencia == year(Data) + 1,
     # restringe DataReferencia aos anos de interesse
-    DataReferencia %in% c(2004, 2005, 2006)
+    DataReferencia %in% c(2010, 2011, 2012, 2013)
   )
 
 # Igualando a data da expectativa para DataReferencia
@@ -123,7 +123,7 @@ p <-
   ) +
   
   # Eixo X (fixa limites para incluir -12 meses e além)
-  scale_x_date(limits = c(as.Date("2004-01-01"), data_fim),
+  scale_x_date(limits = c(as.character(data_ata_menos12), data_fim),
                date_labels = "%b %Y", date_breaks = "3 months",
                expand = expansion(mult = c(0.01, 0.02))) +
   # Eixo Y com mais espaço no topo para os textos

@@ -10,7 +10,7 @@ invisible(lapply(pkgs, require, character.only = TRUE))
 
 # 104� Reuni�o - janeiro 2005
 # Datas de refer�ncia
-data_ata  <- as.Date("2005-01-27")
+data_ata  <- as.Date("2011-01-01")
 data_ini  <- data_ata %m-% months(24)
 data_fim  <- data_ata %m+% months(24)
 data_ata_menos12 <- data_ata %m-% months(12)
@@ -94,7 +94,8 @@ p <-
   ) +
   
   # Eixo X (fixa limites para incluir -12 meses e além)
-  scale_x_date(limits = c(as.Date("2004-01-01"), as.Date("2006-03-01")),
+  
+  scale_x_date(limits = c(as.character(data_ata_menos12), data_fim),
                date_labels = "%b %Y", date_breaks = "3 months",
                expand = expansion(mult = c(0.01, 0.02))) +
   # Eixo Y com mais espaço no topo para os textos

@@ -10,7 +10,7 @@ invisible(lapply(pkgs, require, character.only = TRUE))
 
 # 104 Reunião - janeiro 2005
 # Datas de referência
-data_ata  <- as.Date("2005-01-27")
+data_ata  <- as.Date("2011-01-01")
 data_ini  <- data_ata %m-% months(24)
 data_fim  <- data_ata %m+% months(24)
 data_ata_menos12 <- data_ata %m-% months(12)
