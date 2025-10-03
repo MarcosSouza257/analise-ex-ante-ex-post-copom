@@ -18,7 +18,7 @@ data_ata_menos12 <- data_ata %m-% months(12)
 data_ata_mais12 <- data_ata %m+% months(12)
 data_ata_mais24 <- data_ata %m+% months(24)
 
-View(as.character(data_ata_menos12))
+# View(as.character(data_ata_menos12))
 
 # IPCA - Expectativa
 df <- get_market_expectations(
@@ -136,7 +136,7 @@ p <-
   ) +
   
   # Eixo X (fixa limites para incluir -12 meses e além)
-  scale_x_date(limits = c(as.character(data_ata_menos12), data_fim),
+  scale_x_date(limits = c(data_ata_menos12, data_fim),
                date_labels = "%b %Y", date_breaks = "3 months",
                expand = expansion(mult = c(0.01, 0.02))) +
   # Eixo Y com mais espaço no topo para os textos

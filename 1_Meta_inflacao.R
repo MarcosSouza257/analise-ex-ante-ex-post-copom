@@ -3,7 +3,7 @@
 # Data: 2025-09-10
 
 # Verificar/instalar e carregar pacotes necess�rios
-pkgs <- c("dplyr", "ggplot2", "rbcb", "knitr", "zoo", "lubridate")
+pkgs <- c("dplyr", "ggplot2", "rbcb", "knitr", "zoo", "lubridate", "tidyr")
 to_install <- pkgs[!pkgs %in% installed.packages()[, 1]]
 if (length(to_install)) install.packages(to_install)
 invisible(lapply(pkgs, require, character.only = TRUE))
@@ -87,7 +87,7 @@ p <-
   # Rótulos
   labs(
     title = "Meta de inflação vs IPCA (12m)",
-    subtitle = "Janela: −12m a +24m da ata; IPCA 12m vs Meta",
+    subtitle = "Janela: −12m a +12m da ata; IPCA 12m vs Meta",
     #caption = "Fonte: Pesquisa Focus (rbcb) e IBGE",
     x = "Data",
     y = "Inflação (%)"
@@ -95,7 +95,7 @@ p <-
   
   # Eixo X (fixa limites para incluir -12 meses e além)
   
-  scale_x_date(limits = c(as.character(data_ata_menos12), data_fim),
+  scale_x_date(limits = c(data_ata_menos12, data_ata_mais12),
                date_labels = "%b %Y", date_breaks = "3 months",
                expand = expansion(mult = c(0.01, 0.02))) +
   # Eixo Y com mais espaço no topo para os textos
